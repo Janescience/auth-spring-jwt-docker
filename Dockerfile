@@ -1,4 +1,4 @@
-FROM openjdk:19-jdk
+FROM openjdk:18-jdk
 EXPOSE 8080
 RUN export LC_ALL=en_US.UTF-8
 RUN export LANG=en_US.UTF-8
@@ -7,6 +7,6 @@ RUN apt-get clean && apt-get -y update && apt-get install -y locales && locale-g
 RUN locale-gen en_US.UTF-8
 ENV TZ=Asia/Bangkok
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-ARG JAR_FILE=build/auth-app-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} auth-app.jar
-ENTRYPOINT ["java","-jar","-Dserver.port=8080","/auth-app.jar"]
+ARG JAR_FILE=build/auth-0.0.1-SNAPSHOT.jar
+COPY ${JAR_FILE} auth.jar
+ENTRYPOINT ["java","-jar","-Dserver.port=8080","/auth.jar"]
