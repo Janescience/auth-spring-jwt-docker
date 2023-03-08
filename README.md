@@ -9,7 +9,7 @@
 - Docker* (With docker-compose)
 - Swagger UI
 
-> "*" is require installed in environment
+> * is require installed in environment
 
 ## API Design
 
@@ -34,5 +34,5 @@ Test the service through the URL : http://localhost:8008/api/swagger-ui.html
 
 ## More Step Usage
 
-Blog > https://janescience.com/blog/auth-springboot-jwt
+Blog > [janescience.com](https://janescience.com/blog/auth-springboot-jwt)
 
