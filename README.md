@@ -1,13 +1,15 @@
 # Authentication Service 
 
 ## Tech
-- Java 18
+- Java 18*
 - Spring Boot 3 (With Spring Security)
-- Maven
+- Maven*
 - JWT
 - PostgresSQL
-- Docker (With docker-compose)
+- Docker* (With docker-compose)
 - Swagger UI
+
+> "*" is require installed in environment
 
 ## API Design
 
@@ -29,4 +31,8 @@ After clone project go to folder and use command `./build.sh`
 Test the service through the URL : http://localhost:8008/api/swagger-ui.html
 
 ![](images\swagger-ui.png)
+
+## More Step Usage
+
+Blog > https://janescience.com/blog/auth-springboot-jwt
 
