@@ -9,7 +9,7 @@
 - Docker* (With docker-compose)
 - Swagger UI
 
-> * is require installed in environment
+> '*' is require installed in environment
 
 ## API Design
 
@@ -29,8 +29,6 @@ After clone project go to folder and use command `./build.sh`
 #### Step 2 - Test API via browser
 
 Test the service through the URL : http://localhost:8008/api/swagger-ui.html
-
-![](images\swagger-ui.png)
 
 ## More Step Usage
 
