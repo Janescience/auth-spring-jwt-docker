@@ -8,6 +8,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +18,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
+import com.demo.auth.security.csrf.CsrfCookieFilter;
 import com.demo.auth.security.jwt.AuthEntryPointJwt;
 import com.demo.auth.security.jwt.AuthTokenFilter;
 import com.demo.auth.security.services.UserDetailsServiceImpl;
@@ -31,6 +35,9 @@ public class WebSecurityConfig  {
 
     @Autowired
     private AuthTokenFilter authenticationJwtTokenFilter;
+
+    @Autowired
+    private CsrfCookieFilter csrfCookieFilter;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -54,17 +61,26 @@ public class WebSecurityConfig  {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+        CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+	    CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+        // set the name of the attribute the CsrfToken will be populated on
+	    requestHandler.setCsrfRequestAttributeName("_csrf");
+
+        http.cors().and()
+            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+            .addFilterBefore(authenticationJwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+            .csrf((csrf) -> csrf
+			    .csrfTokenRepository(tokenRepository)
+			    .csrfTokenRequestHandler(requestHandler)
+		    )
+            .addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class)
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeHttpRequests()
             .requestMatchers("/auth/**").permitAll()
             .requestMatchers("/user/**").authenticated()
-            .and()
-            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .anyRequest().authenticated();
                                       
         http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(authenticationJwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-                
         return http.build();
     }
 }

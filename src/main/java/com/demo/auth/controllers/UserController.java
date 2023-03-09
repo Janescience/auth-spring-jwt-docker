@@ -1,7 +1,6 @@
 package com.demo.auth.controllers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import com.demo.auth.entity.app.Role;
 import com.demo.auth.entity.enums.ERole;
 import com.demo.auth.payload.response.MessageResponse;
 
-import java.util.Set;
 
 
 @CrossOrigin(origins = "*", maxAge = 3600)
