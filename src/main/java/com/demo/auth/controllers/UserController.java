@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.auth.security.services.UserDetailsServiceImpl;
+
 import com.demo.auth.repository.RoleRepository;
 import com.demo.auth.repository.UserRepository;
 import com.demo.auth.entity.app.User;

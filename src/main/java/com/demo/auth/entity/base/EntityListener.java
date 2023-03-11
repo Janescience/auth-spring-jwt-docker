@@ -1,66 +1,55 @@
 package com.demo.auth.entity.base;
 
+import com.demo.auth.security.services.UserDetailsImpl;
 import com.demo.auth.util.AppUtil;
-import com.demo.auth.util.AuthorizeUtil;
 import com.demo.auth.util.DateUtil;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+
 import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import jakarta.persistence.*;
 
 import java.lang.reflect.Field;
-import java.util.Date;
 
 @Log4j2
 @Component
 public class EntityListener {
-    @Autowired
-    private AuthorizeUtil authorizeUtil;
 
     @PrePersist
     public void prePersistFunction(Object object) {
-        String user = null;
-        String progId = null;
-        Date currentDate = DateUtil.getCurrentDate();
-        user = authorizeUtil.getUsername();
-        if (user == null) {
-            user = progId;
-        }
-        this.assignValueToCommonFields(object, user, progId, currentDate, "CREATE");
+        this.assignValueToCommonFields(object, "CREATE");
     }
 
     @PreUpdate
     public void preUpdateFunction(Object object) {
-        String user = null;
-        String progId = null;
-        Date currentDate = DateUtil.getCurrentDate();
-        user = authorizeUtil.getUsername();
-        this.assignValueToCommonFields(object, user, progId, currentDate, "UPDATE");
-    }
-
-    @PostRemove
-    public void postRemoveFunction(Object object) {
-        log.info("==PreRemove===");
-    }
-
-    @PreRemove
-    public void preRemoveFunction(Object object) {
-        log.info("==PreRemove===");
+        this.assignValueToCommonFields(object,"UPDATE");
     }
 
     @SneakyThrows
-    private void assignValueToCommonFields(Object arg, String user, String progId, Date currentDate, String status) {
+    private void assignValueToCommonFields(Object arg, String status) {
+
+        String user = null;
+        Authentication authen = SecurityContextHolder.getContext().getAuthentication();
+        if (AppUtil.isNotNull(authen) && authen.getPrincipal() != "anonymousUser") {
+            UserDetails userDetails = (UserDetails) authen.getPrincipal();
+            if (AppUtil.isNotNull(userDetails) && AppUtil.isNotNull(userDetails.getUsername())) {
+                user = userDetails.getUsername();
+            }
+        }
 
         if (status.equals("CREATE")) {
-            BeanUtils.setProperty(arg, "createdBy", user);
-            BeanUtils.setProperty(arg, "createdDate", currentDate);
+            BeanUtils.setProperty(arg, "createdBy", user != null ? user : "SYSTEM");
+            BeanUtils.setProperty(arg, "createdDate", DateUtil.getCurrentDate());
         }else{
-            BeanUtils.setProperty(arg, "updatedBy", user);
-            BeanUtils.setProperty(arg, "updatedDate", currentDate);
+            BeanUtils.setProperty(arg, "updatedBy", user != null ? user : "SYSTEM");
+            BeanUtils.setProperty(arg, "updatedDate", DateUtil.getCurrentDate());
         }
 
         Class<?> cls = arg.getClass();

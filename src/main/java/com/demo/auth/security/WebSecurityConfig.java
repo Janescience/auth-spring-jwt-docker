@@ -11,6 +11,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +41,12 @@ public class WebSecurityConfig  {
 
     @Autowired
     private CsrfCookieFilter csrfCookieFilter;
+
+    private static final String[] AUTH_WHITELIST = {
+        "/auth/**",
+        "/swagger-ui/**",
+        "/v3/api-docs/**",
+    };
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -72,11 +81,18 @@ public class WebSecurityConfig  {
             .csrf((csrf) -> csrf
 			    .csrfTokenRepository(tokenRepository)
 			    .csrfTokenRequestHandler(requestHandler)
+                .requireCsrfProtectionMatcher(
+                new NegatedRequestMatcher(new OrRequestMatcher(
+                    new AntPathRequestMatcher("/swagger-ui/**"),
+                    new AntPathRequestMatcher("/v3/api-docs/**"))
+                    )
+                )
 		    )
+            // .csrf().disable()
             .addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class)
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeHttpRequests()
-            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers(AUTH_WHITELIST).permitAll()
             .requestMatchers("/user/**").authenticated()
             .anyRequest().authenticated();
                                       
