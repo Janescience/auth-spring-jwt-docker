@@ -1,12 +1,11 @@
+FROM maven:3.8.7-openjdk-18-slim AS build
+
+COPY src /home/app/src
+COPY pom.xml /home/app
+RUN mvn -f /home/app/pom.xml clean package -DskipTests
+
 FROM openjdk:18-jdk
+COPY --from=build /home/app/target/auth-0.0.1-SNAPSHOT.jar /home/app/build/auth.jar
+
 EXPOSE 8080
-RUN export LC_ALL=en_US.UTF-8
-RUN export LANG=en_US.UTF-8
-RUN export LC_TIME=th_TH.UTF-8
-RUN apt-get clean && apt-get -y update && apt-get install -y locales && locale-gen en_US.UTF-8 && locale-gen th_TH.UTF-8
-RUN locale-gen en_US.UTF-8
-ENV TZ=Asia/Bangkok
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-ARG JAR_FILE=build/auth-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} auth.jar
-ENTRYPOINT ["java","-jar","-Dserver.port=8080","/auth.jar"]
+ENTRYPOINT ["java","-jar","-Dserver.port=8080","/home/app/build/auth.jar"]
