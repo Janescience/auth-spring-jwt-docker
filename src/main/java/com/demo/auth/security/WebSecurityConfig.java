@@ -34,7 +34,7 @@ public class WebSecurityConfig  {
     UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-	private AuthEntryPointJwt unauthorizedHandler;
+	private AuthEntryPointJwt unauthorizedHandler;  
 
     @Autowired
     private AuthTokenFilter authenticationJwtTokenFilter;
@@ -84,7 +84,8 @@ public class WebSecurityConfig  {
                 .requireCsrfProtectionMatcher(
                 new NegatedRequestMatcher(new OrRequestMatcher(
                     new AntPathRequestMatcher("/swagger-ui/**"),
-                    new AntPathRequestMatcher("/v3/api-docs/**"))
+                    new AntPathRequestMatcher("/v3/api-docs/**"),
+                    new AntPathRequestMatcher("/user/**"))
                     )
                 )
 		    )
