@@ -35,5 +35,5 @@ Test the service through the URL : http://localhost:8008/api/swagger-ui/index.ht
 
 ## More Step Usage
 
-Blog : [janescience.com](https://janescience.com/blog/auth-springboot-jwt)
+Blog : [janescience.com](https://janescience.com/blog/auth-springsecurity-jwt)
 
