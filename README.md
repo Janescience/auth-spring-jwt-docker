@@ -35,5 +35,8 @@ Test the service through the URL : http://localhost:8008/api/swagger-ui/index.ht
 
 ## More Step Usage
 
-Blog : [janescience.com](https://janescience.com/blog/auth-springsecurity-jwt)
+Blog Authentication & JWT : [janescience.com](https://janescience.com/blog/auth-springsecurity-jwt)
+Blog Run Spring Boot with Docker Compose : [janescience.com](https://janescience.com/blog/springboot-docker)
+Blog Add CSRF Protection in Spring Security : [janescience.com](https://janescience.com/blog/csrf-spring-security)
+
 
