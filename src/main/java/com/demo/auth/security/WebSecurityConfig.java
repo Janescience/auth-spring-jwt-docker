@@ -8,12 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +17,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
-import com.demo.auth.security.csrf.CsrfCookieFilter;
 import com.demo.auth.security.jwt.AuthEntryPointJwt;
 import com.demo.auth.security.jwt.AuthTokenFilter;
 import com.demo.auth.security.services.UserDetailsServiceImpl;
@@ -39,10 +34,8 @@ public class WebSecurityConfig  {
     @Autowired
     private AuthTokenFilter authenticationJwtTokenFilter;
 
-    @Autowired
-    private CsrfCookieFilter csrfCookieFilter;
-
     private static final String[] AUTH_WHITELIST = {
+        "/csrf/**",
         "/auth/**",
         "/swagger-ui/**",
         "/v3/api-docs/**",
@@ -81,16 +74,7 @@ public class WebSecurityConfig  {
             .csrf((csrf) -> csrf
 			    .csrfTokenRepository(tokenRepository)
 			    .csrfTokenRequestHandler(requestHandler)
-                .requireCsrfProtectionMatcher(
-                new NegatedRequestMatcher(new OrRequestMatcher(
-                    new AntPathRequestMatcher("/swagger-ui/**"),
-                    new AntPathRequestMatcher("/v3/api-docs/**"),
-                    new AntPathRequestMatcher("/user/**"))
-                    )
-                )
 		    )
-            // .csrf().disable()
-            .addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class)
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeHttpRequests()
             .requestMatchers(AUTH_WHITELIST).permitAll()
