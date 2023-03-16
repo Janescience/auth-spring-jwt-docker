@@ -9,11 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.demo.auth.entity.app.RefreshToken;
+import com.demo.auth.entity.app.User;
 import com.demo.auth.repository.RefreshTokenRepository;
 import com.demo.auth.repository.UserRepository;
 import com.demo.auth.exception.TokenRefreshException;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class RefreshTokenService {
@@ -32,9 +31,16 @@ public class RefreshTokenService {
     }
 
     public RefreshToken createRefreshToken(Long userId) {
+        User user = userRepository.findById(userId).get();
+
+        Optional<RefreshToken> oldRefreshToken = refreshTokenRepository.findByUser(user);
+        if(oldRefreshToken.isPresent()){
+            refreshTokenRepository.deleteByUser(user);
+        }
+
         RefreshToken refreshToken = new RefreshToken();
 
-        refreshToken.setUser(userRepository.findById(userId).get());
+        refreshToken.setUser(user);
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
 
@@ -49,10 +55,5 @@ public class RefreshTokenService {
         }
 
         return token;
-    }
-
-    @Transactional
-    public int deleteByUserId(Long userId) {
-        return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
     }
 }
