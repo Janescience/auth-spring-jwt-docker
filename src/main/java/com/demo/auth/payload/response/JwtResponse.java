@@ -10,6 +10,7 @@ import lombok.Data;
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
+    private String refreshToken;
     private Long id;
     private String username;
     private String phoneNumber;
@@ -27,7 +28,8 @@ public class JwtResponse {
         Double salary, 
         String address, 
         String refCode, 
-        MemberType memberType, 
+        MemberType memberType,
+        String refreshToken, 
         List<String> roles) 
     {
         this.token = accessToken;
@@ -38,6 +40,7 @@ public class JwtResponse {
         this.address = address;
         this.refCode = refCode;
         this.memberType = memberType;
+        this.refreshToken = refreshToken;
         this.roles = roles;
     }
 }

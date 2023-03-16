@@ -78,7 +78,7 @@ public class WebSecurityConfig  {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeHttpRequests()
             .requestMatchers(AUTH_WHITELIST).permitAll()
-            .requestMatchers("/user/**").authenticated()
+            .requestMatchers("/user/**","/auth/refreshtoken").authenticated()
             .anyRequest().authenticated();
                                       
         http.authenticationProvider(authenticationProvider());
