@@ -12,6 +12,9 @@ import com.demo.auth.entity.app.RefreshToken;
 import com.demo.auth.entity.app.User;
 import com.demo.auth.repository.RefreshTokenRepository;
 import com.demo.auth.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.demo.auth.exception.TokenRefreshException;
 
 @Service
@@ -30,6 +33,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
+    @Transactional
     public RefreshToken createRefreshToken(Long userId) {
         User user = userRepository.findById(userId).get();
 
